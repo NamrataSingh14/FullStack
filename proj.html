@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login & Registration | Purposeful Scroll</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #00a676, #2e8bc0);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      width: 380px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      color: #2e8bc0;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      background: #00a676;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #008b5a;
+    }
+
+    .toggle-link {
+      margin-top: 15px;
+      color: #2e8bc0;
+      cursor: pointer;
+      display: block;
+    }
+
+    .message {
+      margin-top: 15px;
+      color: #008b5a;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2 id="formTitle">Register</h2>
+
+    <!-- Registration/Login Form -->
+    <form id="authForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Register</button>
+    </form>
+
+    <span class="toggle-link" id="toggleLink">Already have an account? Login</span>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const formTitle = document.getElementById('formTitle');
+    const authForm = document.getElementById('authForm');
+    const toggleLink = document.getElementById('toggleLink');
+    const message = document.getElementById('message');
+
+    let isLogin = false; // form mode toggle
+
+    // Toggle between login and registration
+    toggleLink.addEventListener('click', () => {
+      isLogin = !isLogin;
+      if (isLogin) {
+        formTitle.textContent = 'Login';
+        document.getElementById('name').style.display = 'none';
+        authForm.querySelector('button').textContent = 'Login';
+        toggleLink.textContent = "Don't have an account? Register";
+      } else {
+        formTitle.textContent = 'Register';
+        document.getElementById('name').style.display = 'block';
+        authForm.querySelector('button').textContent = 'Register';
+        toggleLink.textContent = 'Already have an account? Login';
+      }
+      message.textContent = '';
+      authForm.reset();
+    });
+
+    // Handle form submit
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password || (!isLogin && !name)) {
+        message.style.color = 'red';
+        message.textContent = 'Please fill all fields.';
+        return;
+      }
+
+      // Registration
+      if (!isLogin) {
+        const existingUser = localStorage.getItem(email);
+        if (existingUser) {
+          message.style.color = 'red';
+          message.textContent = 'User already exists. Please login.';
+        } else {
+          const userData = { name, email, password };
+          localStorage.setItem(email, JSON.stringify(userData));
+          message.style.color = 'green';
+          message.textContent = 'Registration successful! You can now login.';
+          authForm.reset();
+        }
+      }
+      // Login
+      else {
+        const storedUser = localStorage.getItem(email);
+        if (!storedUser) {
+          message.style.color = 'red';
+          message.textContent = 'User not found. Please register.';
+        } else {
+          const userData = JSON.parse(storedUser);
+          if (userData.password === password) {
+            message.style.color = 'green';
+            message.textContent = `Welcome back, ${userData.name}! 🎉`;
+            authForm.reset();
+          } else {
+            message.style.color = 'red';
+            message.textContent = 'Incorrect password. Try again.';
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
