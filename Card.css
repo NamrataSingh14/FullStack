@@ -5,6 +5,7 @@
     justify-content: center;
     margin-top: 40px;
     flex-wrap: wrap;
+    
 }
 .card{
     width: 200px;
@@ -30,4 +31,5 @@
 .card-description{
     font-size: 14px;
     color:#555;
+
 }
